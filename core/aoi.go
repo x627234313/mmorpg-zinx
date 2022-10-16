@@ -121,3 +121,27 @@ func (m *AOIManager) GetSurroundGridsByGid(gid int) []*Grid {
 
 	return sudoku
 }
+
+// 根据玩家ID，获取周围九宫格内所有玩家ID
+func (m *AOIManager) GetSurroundPlayerIDsByPos(x, y float32) (playerIDs []int) {
+	// 首先根据x,y轴坐标，得到格子ID
+	gid := m.GetGidByPos(x, y)
+
+	// 再根据格子ID，得到九宫格ID
+	sudoku := m.GetSurroundGridsByGid(gid)
+
+	// 得到每个格子内的玩家ID
+	for _, grid := range sudoku {
+		playerIDs = append(playerIDs, grid.GetPlayerIDs()...)
+	}
+
+	return
+}
+
+// 根据 x，y 轴坐标得到格子ID
+func (m *AOIManager) GetGidByPos(x, y float32) int {
+	idx := (int(x) - m.minX) / m.gridWidth()
+	idy := (int(y) - m.minY) / m.gridHeight()
+
+	return idy*m.countX + idx
+}

@@ -70,3 +70,54 @@ func (m *AOIManager) String() string {
 
 	return s
 }
+
+// 根据格子id-gid，获取周围格子信息
+func (m *AOIManager) GetSurroundGridsByGid(gid int) []*Grid {
+	// 声明周围九宫格切片
+	var sudoku []*Grid
+
+	// 判断当前id是否在AOI区域中
+	if _, ok := m.grids[gid]; !ok {
+		return nil
+	}
+
+	// 当前格子在AOI区域中，把当前格子加入到九宫格切片中
+	sudoku = append(sudoku, m.grids[gid])
+
+	// 计算当前格子所在的x轴的编号
+	idx := gid % m.countX
+
+	// 判断当前格子左边是否有格子
+	if idx > 0 {
+		// 左边有格子，把左边格子加入到九宫格切片中
+		sudoku = append(sudoku, m.grids[gid-1])
+	}
+	// 判断当前格子右边是否有格子
+	if idx < m.countX-1 {
+		// 右边有格子，把右边格子加入到九宫格切片中
+		sudoku = append(sudoku, m.grids[gid+1])
+	}
+
+	// 把x轴上的格子取出遍历，判断上下是否有格子
+	// 声明一个切片，保存x轴上格子的id
+	XgIDs := make([]int, 0, len(sudoku))
+	for _, grid := range sudoku {
+		XgIDs = append(XgIDs, grid.gid)
+	}
+
+	// 判断x轴上每个格子的上下是否有格子
+	for _, xgid := range XgIDs {
+		// 当前格子所在的y轴的编号
+		idy := xgid / m.countY
+		// xgid上边是否有格子，如果有格子，加入到九宫格切片中
+		if idy > 0 {
+			sudoku = append(sudoku, m.grids[xgid-m.countX])
+		}
+		// xgid下边是否有格子，如果有格子，加入到九宫格切片中
+		if idy < m.countY-1 {
+			sudoku = append(sudoku, m.grids[xgid+m.countX])
+		}
+	}
+
+	return sudoku
+}

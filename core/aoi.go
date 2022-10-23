@@ -145,3 +145,31 @@ func (m *AOIManager) GetGidByPos(x, y float32) int {
 
 	return idy*m.countX + idx
 }
+
+// 通过gid获取当前格子的全部playerId
+func (m *AOIManager) GetPlayerIdByGid(gid int) (playerIDs []int) {
+	playerIDs = m.grids[gid].GetPlayerIDs()
+	return
+}
+
+// 添加一个playerId到一个格子中
+func (m *AOIManager) AddPlayerIdToGrid(pid, gid int) {
+	m.grids[gid].Add(pid)
+}
+
+// 移除一个playerId从一个格子中
+func (m *AOIManager) RemovePlayerIdFromGrid(pid, gid int) {
+	m.grids[gid].Remove(pid)
+}
+
+// 通过坐标把一个player添加到一个格子中
+func (m *AOIManager) AddPlayerIdToGridByPos(pid int, x, y float32) {
+	gid := m.GetGidByPos(x, y)
+	m.grids[gid].Add(pid)
+}
+
+// 通过坐标把一个player从一个格子中移除
+func (m *AOIManager) RemovePlayerIdFromGridByPos(pid int, x, y float32) {
+	gid := m.GetGidByPos(x, y)
+	m.grids[gid].Remove(pid)
+}

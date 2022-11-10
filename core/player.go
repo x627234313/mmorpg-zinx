@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/aceld/zinx/ziface"
+	"github.com/x627234313/mmorpg-zinx/pb"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -63,4 +64,33 @@ func (p *Player) SendMsg(msgId uint32, data proto.Message) {
 		return
 	}
 
+}
+
+// 组建msgID=1 的 proto msg，同步player ID
+func (p *Player) SyncPid() {
+	proto_msg := &pb.SyncPid{
+		Pid: int32(p.PId),
+	}
+
+	// 发送给客户端
+	p.SendMsg(1, proto_msg)
+}
+
+// 组建msgID=200 的 proto msg，同步player 初始位置
+func (p *Player) BroadCastStartPosition() {
+	proto_msg := &pb.BroadCast{
+		Pid: int32(p.PId),
+		Tp:  2,
+		Data: &pb.BroadCast_P{
+			P: &pb.Position{
+				X: p.X,
+				Y: p.Y,
+				Z: p.Z,
+				V: p.V,
+			},
+		},
+	}
+
+	// 发送给客户端
+	p.SendMsg(200, proto_msg)
 }

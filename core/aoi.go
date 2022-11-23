@@ -2,6 +2,16 @@ package core
 
 import "fmt"
 
+// 定义地图边界常量
+const (
+	AOI_MIN_X    = 0
+	AOI_MAX_X    = 600
+	AOI_COUNTS_X = 50
+	AOI_MIN_Y    = 0
+	AOI_MAX_Y    = 500
+	AOI_COUNTS_Y = 50
+)
+
 // AOI 区块管理模块
 type AOIManager struct {
 	// 区域的左边界坐标

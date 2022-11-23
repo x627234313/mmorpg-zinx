@@ -26,3 +26,11 @@ message BroadCast{
         int32 ActionData=5;    // 玩家具体动作
         }
 }
+
+
+//=====================
+//玩家聊天数据
+message Talk{
+	string Content=1;    //聊天内容
+}
+//=====================

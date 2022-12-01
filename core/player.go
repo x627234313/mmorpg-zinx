@@ -114,3 +114,58 @@ func (p *Player) Talk(content string) {
 		player.SendMsg(200, proto_msg)
 	}
 }
+
+// 给当前玩家周围的玩家（九宫格）广播自己位置，让他们显示自己
+func (p *Player) SyncSurrounding() {
+	// 获取九宫格内玩家
+	pids := WorldMgr.AoiManager.GetSurroundPlayerIDsByPos(p.X, p.Z)
+	players := make([]*Player, 0, len(pids))
+	for _, pid := range pids {
+		player := WorldMgr.GetPlayer(uint32(pid))
+		players = append(players, player)
+	}
+
+	// 组建msgID = 200 的proto数据
+	msg := &pb.BroadCast{
+		Pid: int32(p.PId),
+		Tp:  2,
+		Data: &pb.BroadCast_P{
+			P: &pb.Position{
+				X: p.X,
+				Y: p.Y,
+				Z: p.Z,
+				V: p.V,
+			},
+		},
+	}
+
+	// 每个玩家分别给对应的客户端发送 msgID=200的消息，显示人物
+	for _, player := range players {
+		player.SendMsg(200, msg)
+	}
+
+	// 上面是让周围九宫格内玩家看到自己
+	// 下一步让自己看到周围九宫格内的玩家
+	// 首先制作proto SyncPlayers数据
+	playersmsg := make([]*pb.Player, 0, len(players))
+	for _, player := range players {
+		p := &pb.Player{
+			Pid: int32(player.PId),
+			P: &pb.Position{
+				X: player.X,
+				Y: player.Y,
+				Z: player.Z,
+				V: player.V,
+			},
+		}
+		playersmsg = append(playersmsg, p)
+	}
+
+	SyncPlayersMsg := &pb.SyncPlayers{
+		Ps: playersmsg,
+	}
+
+	// 给自己客户端发送周围九宫格玩家数据
+	p.SendMsg(202, SyncPlayersMsg)
+
+}

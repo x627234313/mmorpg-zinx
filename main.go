@@ -23,6 +23,9 @@ func OnConnStart(conn ziface.IConnection) {
 
 	// 将当前连接绑定一个玩家ID 的属性
 	conn.SetProperty("pid", player.PId)
+
+	// ====同步周边玩家上线信息，显示周边玩家信息====
+	player.SyncSurrounding()
 }
 
 func main() {
